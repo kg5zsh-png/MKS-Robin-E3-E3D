@@ -207,3 +207,71 @@ the option is off.
 ## License
 
 Marlin is GPLv3. The added files carry the same header and are GPLv3.
+
+---
+
+## Dual-Z: independent motors, UART drivers
+
+The machine drives each leadscrew from its own motor and its own UART-controlled
+driver.
+
+### Motor slots and wiring
+
+| Function | Octopus slot | Step/Dir/Enable | UART TX |
+|---|---|---|---|
+| Z (left screw) | MOTOR 2 | `PF11` / `PG3` / `PG5` | `Z_SERIAL_TX_PIN` `PC6` |
+| Z2 (right screw) | **MOTOR 3** | `PG4` / `PC1` / `PA0` | `Z2_SERIAL_TX_PIN` `PC7` |
+
+The Octopus V1.1 gives every driver slot a **dedicated UART line**, so each
+TMC2209 is addressed on its own wire and no `*_SLAVE_ADDRESS` juggling or
+address-jumper configuration is needed — leave the address jumpers off.
+
+### Configuration applied
+
+```c
+// Configuration.h
+#define X_DRIVER_TYPE  TMC2209
+#define Y_DRIVER_TYPE  TMC2209
+#define Z_DRIVER_TYPE  TMC2209
+#define Z2_DRIVER_TYPE TMC2209     // second screw, MOTOR 3
+#define E0_DRIVER_TYPE TMC2209
+
+// Configuration_adv.h
+#define Z_STEPPER_AUTO_ALIGN       // G34 gantry alignment via the bed probe
+```
+
+Declaring `Z2_DRIVER_TYPE` sets `NUM_Z_STEPPERS` to 2; Marlin then drives both
+screws as one logical Z axis.
+
+### Squaring the gantry
+
+Two independent Z motors can drift out of square, so the gantry needs a
+squaring strategy. Two options:
+
+1. **`Z_STEPPER_AUTO_ALIGN` (enabled here).** `G34` probes the bed near each
+   screw and corrects the difference by moving the motors independently. Needs
+   no extra endstop, which is why it is the default in this build. Run `G34`
+   before `G29`. Probe points default to the probe limits; override with
+   `Z_STEPPER_ALIGN_XY` or `M422 S<index> X<pos> Y<pos>`.
+2. **`Z_MULTI_ENDSTOPS`.** Fit an endstop to each screw and assign `Z2_STOP_PIN`.
+   The gantry then self-squares on every home. Enable this instead if you add
+   the second endstop; the option is documented in place in `Configuration_adv.h`.
+
+> Both are left available on purpose. If you fit dual endstops later, switching
+> is a one-line change.
+
+### Steps per mm for the 4-start screws
+
+`DEFAULT_AXIS_STEPS_PER_UNIT` leaves Z at **400**, which is correct for a
+4-start T8 screw at 16 microsteps:
+
+```
+lead        = pitch × starts = 2 mm × 4 = 8 mm/rev
+steps/mm    = (200 × 16) / 8 = 400
+```
+
+**Verify this against your actual screws.** "4-flight" fixes the number of
+starts but not the pitch, and the lead is what matters. If your screws are not
+2 mm pitch, recompute with the formula above and set Z accordingly (`M92 Z…`
+then `M500` to test before editing the config). A wrong lead here scales every
+Z move — including layer height — by a constant factor.

@@ -1,5 +1,5 @@
 diff --git a/Marlin/Configuration.h b/Marlin/Configuration.h
-index 6f35bd9..bdf1ea5 100644
+index 6f35bd9..6e07c74 100644
 --- a/Marlin/Configuration.h
 +++ b/Marlin/Configuration.h
 @@ -68,7 +68,7 @@
@@ -11,6 +11,32 @@ index 6f35bd9..bdf1ea5 100644
  #endif
  
  // @section serial
+@@ -152,12 +152,12 @@
+  *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
+  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC2240', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
+  */
+-#define X_DRIVER_TYPE  A4988
+-#define Y_DRIVER_TYPE  A4988
+-#define Z_DRIVER_TYPE  A4988
++#define X_DRIVER_TYPE  TMC2209
++#define Y_DRIVER_TYPE  TMC2209
++#define Z_DRIVER_TYPE  TMC2209
+ //#define X2_DRIVER_TYPE A4988
+ //#define Y2_DRIVER_TYPE A4988
+-//#define Z2_DRIVER_TYPE A4988
++#define Z2_DRIVER_TYPE TMC2209
+ //#define Z3_DRIVER_TYPE A4988
+ //#define Z4_DRIVER_TYPE A4988
+ //#define I_DRIVER_TYPE  A4988
+@@ -166,7 +166,7 @@
+ //#define U_DRIVER_TYPE  A4988
+ //#define V_DRIVER_TYPE  A4988
+ //#define W_DRIVER_TYPE  A4988
+-#define E0_DRIVER_TYPE A4988
++#define E0_DRIVER_TYPE  TMC2209
+ //#define E1_DRIVER_TYPE A4988
+ //#define E2_DRIVER_TYPE A4988
+ //#define E3_DRIVER_TYPE A4988
 @@ -1534,7 +1534,7 @@
  /**
   * The BLTouch probe uses a Hall effect sensor and emulates a servo.
@@ -72,10 +98,32 @@ index 6f35bd9..bdf1ea5 100644
    #define USE_MKS_GREEN_UI
  #elif DGUS_UI_IS(IA_CREALITY)
 diff --git a/Marlin/Configuration_adv.h b/Marlin/Configuration_adv.h
-index 9d80539..e29fcb0 100644
+index 9d80539..eb02082 100644
 --- a/Marlin/Configuration_adv.h
 +++ b/Marlin/Configuration_adv.h
-@@ -2192,6 +2192,22 @@
+@@ -919,6 +919,12 @@
+ #ifdef Z2_DRIVER_TYPE
+   //#define INVERT_Z2_VS_Z_DIR        // Z2 direction signal is the opposite of Z
+ 
++  /**
++   * This build squares the gantry with G34 (Z_STEPPER_AUTO_ALIGN) using the bed
++   * probe, which needs no second endstop. If you instead fit an endstop to each
++   * Z screw, enable Z_MULTI_ENDSTOPS and assign Z2_STOP_PIN; the gantry then
++   * self-squares at every home.
++   */
+   //#define Z_MULTI_ENDSTOPS          // Other Z axes have their own endstops
+   #if ENABLED(Z_MULTI_ENDSTOPS)
+     //#define Z2_STOP_PIN X_MAX_PIN   // Z2 endstop pin override
+@@ -1057,7 +1063,7 @@
+  * Z Steppers Auto-Alignment
+  * Add the G34 command to align multiple Z steppers using a bed probe.
+  */
+-//#define Z_STEPPER_AUTO_ALIGN
++#define Z_STEPPER_AUTO_ALIGN
+ #if ENABLED(Z_STEPPER_AUTO_ALIGN)
+   /**
+    * Define probe X and Y positions for Z1, Z2 [, Z3 [, Z4]]
+@@ -2192,6 +2198,22 @@
  #if HAS_DGUS_LCD
    #define LCD_BAUDRATE 115200
  
@@ -98,7 +146,7 @@ index 9d80539..e29fcb0 100644
    #define DGUS_RX_BUFFER_SIZE 128
    #define DGUS_TX_BUFFER_SIZE 48
    //#define SERIAL_STATS_RX_BUFFER_OVERRUNS  // Fix Rx overrun situation (Currently only for AVR)
-@@ -2426,11 +2442,11 @@
+@@ -2426,11 +2448,11 @@
   *
   * Warning: Does not respect endstops!
   */
@@ -112,7 +160,7 @@ index 9d80539..e29fcb0 100644
    //#define BABYSTEP_XY                     // Also enable X/Y Babystepping. Not supported on DELTA!
    //#define BABYSTEP_INVERT_Z               // Enable if Z babysteps should go the other way
    //#define BABYSTEP_MILLIMETER_UNITS       // Specify BABYSTEP_MULTIPLICATOR_(XY|Z) in mm instead of micro-steps
-@@ -2449,7 +2465,7 @@
+@@ -2449,7 +2471,7 @@
  
    //#define BABYSTEP_DISPLAY_TOTAL          // Display total babysteps since last G28
  
@@ -659,10 +707,10 @@ index d969e58..fc68165 100644
      screen.settingsReset();
 diff --git a/README-LK5PRO-OCTOPUS.md b/README-LK5PRO-OCTOPUS.md
 new file mode 100644
-index 0000000..4bdb58d
+index 0000000..65469cd
 --- /dev/null
 +++ b/README-LK5PRO-OCTOPUS.md
-@@ -0,0 +1,198 @@
+@@ -0,0 +1,277 @@
 +# Marlin for BTT Octopus V1.1 driving the LK5 Pro DWIN panel
 +
 +Marlin (bugfix-2.1.x) configured for a **BigTreeTech Octopus V1.1 (STM32F446ZE)**
@@ -690,6 +738,17 @@ index 0000000..4bdb58d
 +| ExtUI / `gcode.cpp` hooks | **Not compiled** |
 +| Board + DGUS configuration | **Not compiled** |
 +| Anything on real hardware | **Not run** |
++
++### Getting a buildable tree
++
++```bash
++./apply.sh              # clones Marlin at the pinned commit, applies the patch, runs tests
++```
++
++The patch is generated against Marlin `bugfix-2.1.x` commit
++`0ebac470a47d9e278096c955f36087b613001a65` (2026-08-17) and has been verified to
++apply cleanly to it. `marlin-overlay/` holds the new files verbatim for review
++without applying anything.
 +
 +Run the host tests with:
 +
@@ -861,6 +920,74 @@ index 0000000..4bdb58d
 +## License
 +
 +Marlin is GPLv3. The added files carry the same header and are GPLv3.
++
++---
++
++## Dual-Z: independent motors, UART drivers
++
++The machine drives each leadscrew from its own motor and its own UART-controlled
++driver.
++
++### Motor slots and wiring
++
++| Function | Octopus slot | Step/Dir/Enable | UART TX |
++|---|---|---|---|
++| Z (left screw) | MOTOR 2 | `PF11` / `PG3` / `PG5` | `Z_SERIAL_TX_PIN` `PC6` |
++| Z2 (right screw) | **MOTOR 3** | `PG4` / `PC1` / `PA0` | `Z2_SERIAL_TX_PIN` `PC7` |
++
++The Octopus V1.1 gives every driver slot a **dedicated UART line**, so each
++TMC2209 is addressed on its own wire and no `*_SLAVE_ADDRESS` juggling or
++address-jumper configuration is needed — leave the address jumpers off.
++
++### Configuration applied
++
++```c
++// Configuration.h
++#define X_DRIVER_TYPE  TMC2209
++#define Y_DRIVER_TYPE  TMC2209
++#define Z_DRIVER_TYPE  TMC2209
++#define Z2_DRIVER_TYPE TMC2209     // second screw, MOTOR 3
++#define E0_DRIVER_TYPE TMC2209
++
++// Configuration_adv.h
++#define Z_STEPPER_AUTO_ALIGN       // G34 gantry alignment via the bed probe
++```
++
++Declaring `Z2_DRIVER_TYPE` sets `NUM_Z_STEPPERS` to 2; Marlin then drives both
++screws as one logical Z axis.
++
++### Squaring the gantry
++
++Two independent Z motors can drift out of square, so the gantry needs a
++squaring strategy. Two options:
++
++1. **`Z_STEPPER_AUTO_ALIGN` (enabled here).** `G34` probes the bed near each
++   screw and corrects the difference by moving the motors independently. Needs
++   no extra endstop, which is why it is the default in this build. Run `G34`
++   before `G29`. Probe points default to the probe limits; override with
++   `Z_STEPPER_ALIGN_XY` or `M422 S<index> X<pos> Y<pos>`.
++2. **`Z_MULTI_ENDSTOPS`.** Fit an endstop to each screw and assign `Z2_STOP_PIN`.
++   The gantry then self-squares on every home. Enable this instead if you add
++   the second endstop; the option is documented in place in `Configuration_adv.h`.
++
++> Both are left available on purpose. If you fit dual endstops later, switching
++> is a one-line change.
++
++### Steps per mm for the 4-start screws
++
++`DEFAULT_AXIS_STEPS_PER_UNIT` leaves Z at **400**, which is correct for a
++4-start T8 screw at 16 microsteps:
++
++```
++lead        = pitch × starts = 2 mm × 4 = 8 mm/rev
++steps/mm    = (200 × 16) / 8 = 400
++```
++
++**Verify this against your actual screws.** "4-flight" fixes the number of
++starts but not the pitch, and the lead is what matters. If your screws are not
++2 mm pitch, recompute with the formula above and set Z accordingly (`M92 Z…`
++then `M500` to test before editing the config). A wrong lead here scales every
++Z move — including layer height — by a constant factor.
 diff --git a/buildroot/share/tests/dgus_console/run_tests.sh b/buildroot/share/tests/dgus_console/run_tests.sh
 new file mode 100755
 index 0000000..f4b9425
