@@ -165,8 +165,19 @@ it is reachable without the solver. Prioritise getting there.
 
 ---
 
+## G-code flavor: Marlin first — decided
+
+Target **Marlin flavor first**, then Klipper. Rationale: the Octopus is running
+Marlin now, so Marlin output is testable against real hardware immediately, and
+the un-deform stage can be validated before the Klipper migration adds a second
+unknown. Keep flavor-specific emission behind OrcaSlicer's existing
+`GCodeFlavor` handling rather than hard-coding — the Klipper switch should then
+be a configuration change, not a second port.
+
+Note this only concerns *emission*. The deform / un-deform math is
+flavor-independent, so nothing about the Klipper migration invalidates steps 1-5
+of the build order.
+
 ## Open questions
 
 - Measured hotend clearance angle on the modified LK5 Pro (blocks step 3 tuning).
-- Whether to target Klipper G-code flavor from the start, given the eventual
-  migration, or Marlin first to match the firmware now on the Octopus.
