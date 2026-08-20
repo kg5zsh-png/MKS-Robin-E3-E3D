@@ -78,11 +78,12 @@ pipeline. Drops their `src/gcode.cpp` entirely.
 
 **Blocked on the user:**
 
-1. **Create an empty repo** — suggested `kg5zsh-png/orca-nonplanar`, private, no
-   README/gitignore. Then attach it and start the fork harness.
+1. ~~Create an empty repo~~ — **done**: `kg5zsh-png/orca-nonplanar-` exists,
+   private, pushable. Note the **trailing hyphen** in the name; rename before it
+   is baked into clone URLs and docs.
 2. **Widen the environment network policy** so PlatformIO resolves. Until then no
    firmware can be compiled, and OrcaSlicer's dependency build will hit the same
-   wall.
+   wall. Details in "PlatformIO network policy" below.
 3. **Measure the hotend clearance angle** (nozzle tip → widest point of
    block/shroud). This is a hard input to the curved-layer optimizer and bounds
    the achievable curvature on a 3-axis machine.
@@ -101,6 +102,53 @@ pipeline. Drops their `src/gcode.cpp` entirely.
 8. Port the OSQP optimizer last.
 
 ---
+
+## 3a. PlatformIO network policy — what to allow
+
+Set on the **environment** (Claude Code on the web → environment settings →
+network policy), not in-session; the container cannot widen its own policy.
+
+Hosts observed returning **403 on CONNECT** while `pio run -e STM32F446ZE_btt`
+tried to install `ststm32`:
+
+```
+api.registry.platformio.org:443
+api.registry.nm1.platformio.org:443
+collector.platformio.org:443
+```
+
+**That list is incomplete.** The run died at the registry-API stage, so the
+package *download* hosts were never reached and never logged. Allow these too:
+
+```
+dl.registry.platformio.org:443
+dl.registry.nm1.platformio.org:443
+```
+
+Also required, and already working here — do not remove:
+`github.com`, `objects.githubusercontent.com`, `raw.githubusercontent.com`
+(much of the ARM toolchain and many framework packages are served from GitHub
+release assets, not from PlatformIO's own CDN).
+
+`collector.platformio.org` is **telemetry only**. Rather than allowlisting it:
+
+```bash
+pio settings set enable_telemetry No
+```
+
+Simplest workable policy if per-host allowlisting is fiddly: allow
+`*.platformio.org`.
+
+Verify before trusting it:
+
+```bash
+curl -sS "$HTTPS_PROXY/__agentproxy/status" | python3 -c \
+  "import sys,json;[print(f['host']) for f in json.load(sys.stdin)['recentRelayFailures']]"
+pio pkg install -g -p ststm32     # should resolve, not HTTPClientError
+```
+
+The same policy gap will block OrcaSlicer's dependency fetch later, so fixing it
+unblocks both tracks.
 
 ## 4. Things that were checked and found wanting
 
