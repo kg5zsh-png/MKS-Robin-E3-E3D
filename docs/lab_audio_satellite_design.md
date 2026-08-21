@@ -1,11 +1,14 @@
 # JLS-1 — Lab Voice Satellite (audio module for Claude ⇄ Mike)
 
-**Owner:** KG5ZSH mesh (CiC node) · **Status:** draft hardware design, no firmware yet · **Last updated:** 2026-08-04
+**Owner:** KG5ZSH mesh (CiC node) · **Status:** hardware + satellite firmware built, LAB server side still open · **Last updated:** 2026-08-21
 
 > **Build-ready docs:** [`lab_audio_satellite_bom.md`](lab_audio_satellite_bom.md) (shopping
 > list), [`images/jls1_schematic.svg`](images/jls1_schematic.svg) (schematic), and
 > [`lab_audio_satellite_assembly.md`](lab_audio_satellite_assembly.md) (step-by-step build) turn
-> this design into an actual bench build. This doc stays the source of truth for *why*.
+> this design into an actual bench build. The ESP32-S3 firmware living up to the *Firmware
+> design* section below is in [`../jls1-firmware/`](../jls1-firmware/) (see its README for
+> flashing + a stand-in echo server to bench-test end to end before the LAB server exists).
+> This doc stays the source of truth for *why*.
 
 > Committed here for the same reason as `JARVISBoot_cert_fix_runbook.md`: this branch is
 > the working surface for the JARVIS project, not Robin E3 firmware. This doc specs a
@@ -113,6 +116,10 @@ across its power feed if you go that route.
 
 ## Firmware design
 
+> Implemented in [`../jls1-firmware/src/main.cpp`](../jls1-firmware/src/main.cpp), built and
+> flashed against the real ESP32-S3 toolchain. This section stays the spec; that file is the
+> implementation of it.
+
 State machine, driven by the button:
 
 ```
@@ -168,7 +175,9 @@ grille, a top-mounted button, and a light pipe or diffused window for the WS2812
 5. Network test: join lab Wi-Fi, ping the LAB server's LAN address.
 6. End-to-end test: stand up a trivial echo endpoint on `/voice` before the real
    STT→Claude→TTS pipeline exists, so the round trip (mic → network → speaker) can be
-   validated independently of the LAB-server work above.
+   validated independently of the LAB-server work above. This one's built —
+   `jls1-firmware/tools/echo_voice_server.py` — and already round-trip tested against the
+   firmware's exact frame protocol.
 
 ## Future improvements (not in scope for v1)
 

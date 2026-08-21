@@ -1,0 +1,5 @@
+# JLS-1 firmware — build output and local secrets (WiFi creds, LAB auth token)
+jls1-firmware/.pio/
+jls1-firmware/include/config.h
+__pycache__/
+*.pyc

@@ -8,11 +8,12 @@
 
 > **Scope check before you start soldering:** these steps get you a fully wired, bench-tested
 > JLS-1 board that boots, records, and plays audio locally. They do **not** by themselves let you
-> talk to Claude — the ESP32 firmware (push-to-talk state machine + WebSocket client) and the
-> LAB server's `/voice` endpoint (STT → Claude → TTS) are separate, not-yet-written software work
-> described in the design doc's *Firmware design* and *LAB-server contract* sections. Step 9 below
-> uses a local test tone, not the real pipeline, so you can validate hardware independently of
-> that software.
+> talk to Claude yet — the firmware (in [`../jls1-firmware/`](../jls1-firmware/)) is written and
+> flashable, but the LAB server's `/voice` endpoint (STT → Claude → TTS) described in the design
+> doc's *LAB-server contract* section is still not built. Step 9 below can use either a local
+> test tone or `jls1-firmware/tools/echo_voice_server.py` (which exercises the real firmware +
+> network path, not just the speaker) to validate hardware independently of that remaining
+> software work.
 
 ## 1. Gather parts and verify pinout
 
@@ -99,21 +100,22 @@ With a multimeter in continuity mode, power still disconnected:
 1. Plug in the 5 V supply. Confirm U1 boots (its own power LED, if it has one) and nothing gets
    hot to the touch in the first 10–15 seconds.
 2. Measure the 3V3 and +5V rails with the multimeter — both should read within ~5% of nominal.
-3. If you already have a minimal test sketch (a local 440 Hz tone out through I2S1, no network
-   needed — see the design doc's bring-up plan, item 3), flash it now and confirm clean audio
-   from LS1 with no dropouts. If not, this step just becomes "board powers up cleanly" for now;
-   full audio bring-up happens once the firmware in the design doc's *Firmware design* section is
-   written.
+3. Flash the real firmware from [`../jls1-firmware/`](../jls1-firmware/) (see its README) and
+   run `jls1-firmware/tools/echo_voice_server.py` on any machine on the lab LAN. Press and hold
+   the button, say something, let go — you should hear it echoed back through LS1 a beat later.
+   That single test proves the mic, I2S wiring, WS2812 state colors, amp, and speaker all
+   together, using the real firmware and network path rather than a synthetic tone.
 
 ## 10. Close it up
 
 Once bring-up checks pass, seat the board in the enclosure, route the mic so its port lines up
 with the case's mic hole, mount the speaker against its grille, and secure the lid. Leave the USB-C
-port on U1 reachable — you'll need it again to flash the real firmware.
+port on U1 reachable — you'll still want it for firmware updates.
 
 ## What's next
 
-Hardware is now built and bench-verified. The remaining work to actually talk to Claude is
-firmware (ESP32 push-to-talk/I2S/WebSocket client) and the LAB server's `/voice` endpoint, both
-specified but not yet implemented — see `lab_audio_satellite_design.md`'s *Firmware design* and
-*LAB-server contract* sections for the contract both sides need to follow.
+Hardware and firmware are both built and bench-verified (step 9's echo test proves the whole
+mic → network → speaker path). The one remaining piece to actually talk to Claude is the LAB
+server's `/voice` endpoint — see `lab_audio_satellite_design.md`'s *LAB-server contract* section
+for the frame protocol it needs to speak (the same one `jls1-firmware` and the echo server
+already use).

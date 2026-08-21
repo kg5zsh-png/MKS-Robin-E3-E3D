@@ -43,9 +43,7 @@
 
 ## Explicitly not included here
 
-- **Firmware.** No ESP32 sketch exists yet — the assembly doc gets you to a wired, bench-tested
-  board; flashing the push-to-talk/I2S/WebSocket firmware is separate follow-on work.
 - **LAB-server `/voice` endpoint.** The STT → Claude → TTS pipeline the design doc specs as the
-  "LAB-server contract" doesn't exist yet either. Both are required before JLS-1 can actually
-  hold a conversation — see the design doc's *Bring-up / test plan* for how hardware bring-up is
-  meant to happen independently of that (echo-endpoint test) so you're not blocked on it.
+  "LAB-server contract" doesn't exist yet. The ESP32 firmware is written and flashable
+  (`../jls1-firmware/`, with a stand-in echo server for bench-testing without it) — this is the
+  one remaining piece before JLS-1 can hold a real conversation.
