@@ -1,0 +1,25 @@
+// JLS-1 local configuration — WiFi credentials and LAB server connection details.
+//
+// Copy this file to config.h (same directory) and fill in real values. config.h is
+// gitignored on purpose — it holds secrets (WiFi password, LAB auth token) and must
+// never be committed.
+//
+//   cp include/config.h.example include/config.h
+
+#pragma once
+
+// ---- Lab WiFi (same physical LAN the LAB server's NIC is on — see the design doc's
+//      Architecture section for why this doesn't need to be the Tailscale mesh) ----
+#define WIFI_SSID       "your-lab-wifi-ssid"
+#define WIFI_PASSWORD   "your-lab-wifi-password"
+
+// ---- LAB server ----
+// Local LAN address of the LAB server (NOT its 100.82.240.6 tailnet address — see
+// docs/lab_audio_satellite_design.md's Architecture section).
+#define LAB_SERVER_HOST "192.0.2.10"
+#define LAB_SERVER_PORT 5081
+#define LAB_SERVER_PATH "/voice"
+
+// Shared pre-shared token sent as an Authorization header, per the LAB-server
+// contract in the design doc. Match whatever the /voice endpoint actually expects.
+#define LAB_AUTH_TOKEN  "changeme"
