@@ -2,6 +2,11 @@
 
 **Owner:** KG5ZSH mesh (CiC node) · **Status:** draft hardware design, no firmware yet · **Last updated:** 2026-08-04
 
+> **Build-ready docs:** [`lab_audio_satellite_bom.md`](lab_audio_satellite_bom.md) (shopping
+> list), [`images/jls1_schematic.svg`](images/jls1_schematic.svg) (schematic), and
+> [`lab_audio_satellite_assembly.md`](lab_audio_satellite_assembly.md) (step-by-step build) turn
+> this design into an actual bench build. This doc stays the source of truth for *why*.
+
 > Committed here for the same reason as `JARVISBoot_cert_fix_runbook.md`: this branch is
 > the working surface for the JARVIS project, not Robin E3 firmware. This doc specs a
 > physical **audio satellite** — mic + speaker + button — that lets the Claude app hold a

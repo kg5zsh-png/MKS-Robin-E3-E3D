@@ -1,0 +1,195 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 920" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1200" height="920" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="600" y="34" text-anchor="middle" font-size="24" font-weight="bold" fill="#111">JLS-1 — Lab Voice Satellite — Schematic</text>
+  <text x="600" y="54" text-anchor="middle" font-size="13" fill="#555">ESP32-S3 audio satellite · point-to-point wiring reference · rev 1.0 · 2026-08-21</text>
+
+  <!-- ===================== Legend ===================== -->
+  <g>
+    <rect x="910" y="90" width="230" height="196" rx="6" fill="#fafafa" stroke="#333" stroke-width="1.5"/>
+    <text x="925" y="110" font-size="13" font-weight="bold" fill="#111">Wire colors</text>
+    <line x1="925" y1="124" x2="955" y2="124" stroke="#cc3333" stroke-width="3"/><text x="962" y="128" font-size="11" fill="#222">+5V (raw, from supply)</text>
+    <line x1="925" y1="142" x2="955" y2="142" stroke="#2f6fce" stroke-width="3"/><text x="962" y="146" font-size="11" fill="#222">3V3 (from ESP32 onboard reg)</text>
+    <line x1="925" y1="160" x2="955" y2="160" stroke="#222222" stroke-width="3"/><text x="962" y="164" font-size="11" fill="#222">GND (common)</text>
+    <line x1="925" y1="178" x2="955" y2="178" stroke="#d9822b" stroke-width="3"/><text x="962" y="182" font-size="11" fill="#222">I2S clock (SCK / BCLK)</text>
+    <line x1="925" y1="196" x2="955" y2="196" stroke="#1f9e8e" stroke-width="3"/><text x="962" y="200" font-size="11" fill="#222">I2S word-select (WS / LRC)</text>
+    <line x1="925" y1="214" x2="955" y2="214" stroke="#7a3fbf" stroke-width="3"/><text x="962" y="218" font-size="11" fill="#222">I2S data (SD / DIN)</text>
+    <line x1="925" y1="232" x2="955" y2="232" stroke="#3a9b3a" stroke-width="3"/><text x="962" y="236" font-size="11" fill="#222">control GPIO (button, amp SD, LED)</text>
+    <line x1="925" y1="250" x2="955" y2="250" stroke="#555555" stroke-width="3"/><text x="962" y="254" font-size="11" fill="#222">amplified speaker output</text>
+    <text x="925" y="274" font-size="10.5" fill="#777">Dots = pin/wire junctions.</text>
+  </g>
+
+  <!-- ===================== INMP441 mic ===================== -->
+  <g>
+    <rect x="60" y="110" width="220" height="180" rx="6" fill="#fdfdfd" stroke="#333" stroke-width="2"/>
+    <text x="75" y="132" font-size="15" font-weight="bold" fill="#111">INMP441</text>
+    <text x="75" y="148" font-size="11" fill="#555">I2S MEMS microphone</text>
+
+    <!-- pins on right edge -->
+    <circle cx="280" cy="140" r="4" fill="#2f6fce"/><text x="200" y="136" font-size="11" text-anchor="end" fill="#222">VDD</text>
+    <circle cx="280" cy="165" r="4" fill="#222222"/><text x="200" y="161" font-size="11" text-anchor="end" fill="#222">GND</text>
+    <circle cx="280" cy="190" r="4" fill="#222222"/><text x="200" y="186" font-size="11" text-anchor="end" fill="#222">L/R</text>
+    <circle cx="280" cy="215" r="4" fill="#1f9e8e"/><text x="200" y="211" font-size="11" text-anchor="end" fill="#222">WS</text>
+    <circle cx="280" cy="240" r="4" fill="#d9822b"/><text x="200" y="236" font-size="11" text-anchor="end" fill="#222">SCK</text>
+    <circle cx="280" cy="265" r="4" fill="#7a3fbf"/><text x="200" y="261" font-size="11" text-anchor="end" fill="#222">SD</text>
+
+    <!-- L/R local tie to GND (mono) -->
+    <path d="M280,190 L305,190 L305,165" fill="none" stroke="#222222" stroke-width="1.5"/>
+    <text x="308" y="182" font-size="9.5" fill="#777">(L/R→GND: mono)</text>
+  </g>
+
+  <!-- ===================== ESP32-S3 DevKit ===================== -->
+  <g>
+    <rect x="460" y="280" width="280" height="340" rx="6" fill="#fdfdfd" stroke="#333" stroke-width="2.5"/>
+    <text x="600" y="308" text-anchor="middle" font-size="16" font-weight="bold" fill="#111">ESP32-S3 DevKit</text>
+    <text x="600" y="326" text-anchor="middle" font-size="11" fill="#555">Wi-Fi MCU · two independent I2S buses</text>
+    <text x="600" y="342" text-anchor="middle" font-size="10" fill="#888">verify GPIOs against your board's silkscreen</text>
+
+    <!-- left edge: mic side -->
+    <circle cx="460" cy="320" r="4" fill="#2f6fce"/><text x="470" y="316" font-size="11" fill="#222">3V3 → mic VDD</text>
+    <circle cx="460" cy="350" r="4" fill="#222222"/><text x="470" y="346" font-size="11" fill="#222">GND → mic GND</text>
+    <circle cx="460" cy="380" r="4" fill="#7a3fbf"/><text x="470" y="376" font-size="11" fill="#222">GPIO15 — I2S0 SD (mic in)</text>
+    <circle cx="460" cy="410" r="4" fill="#1f9e8e"/><text x="470" y="406" font-size="11" fill="#222">GPIO16 — I2S0 WS</text>
+    <circle cx="460" cy="440" r="4" fill="#d9822b"/><text x="470" y="436" font-size="11" fill="#222">GPIO17 — I2S0 SCK</text>
+
+    <!-- right edge: amp side -->
+    <circle cx="740" cy="320" r="4" fill="#3a9b3a"/><text x="730" y="316" font-size="11" text-anchor="end" fill="#222">GPIO4 — amp SD (mute)</text>
+    <circle cx="740" cy="350" r="4" fill="#1f9e8e"/><text x="730" y="346" font-size="11" text-anchor="end" fill="#222">GPIO5 — I2S1 LRC</text>
+    <circle cx="740" cy="380" r="4" fill="#7a3fbf"/><text x="730" y="376" font-size="11" text-anchor="end" fill="#222">GPIO6 — I2S1 DIN (amp out)</text>
+    <circle cx="740" cy="410" r="4" fill="#d9822b"/><text x="730" y="406" font-size="11" text-anchor="end" fill="#222">GPIO7 — I2S1 BCLK</text>
+
+    <!-- bottom edge: button / LED / power -->
+    <circle cx="500" cy="620" r="4" fill="#3a9b3a"/><text x="500" y="638" font-size="10.5" text-anchor="middle" fill="#222">GPIO18</text>
+    <circle cx="560" cy="620" r="4" fill="#3a9b3a"/><text x="560" y="638" font-size="10.5" text-anchor="middle" fill="#222">GPIO8</text>
+    <circle cx="620" cy="620" r="4" fill="#cc3333"/><text x="620" y="638" font-size="10.5" text-anchor="middle" fill="#222">5V in</text>
+    <circle cx="670" cy="620" r="4" fill="#2f6fce"/><text x="670" y="638" font-size="10.5" text-anchor="middle" fill="#222">3V3 out</text>
+    <circle cx="720" cy="620" r="4" fill="#222222"/><text x="720" y="638" font-size="10.5" text-anchor="middle" fill="#222">GND</text>
+  </g>
+
+  <!-- mic-to-MCU wires -->
+  <path d="M280,140 L340,140 L340,320 L460,320" fill="none" stroke="#2f6fce" stroke-width="2.5"/>
+  <path d="M280,165 L360,165 L360,350 L460,350" fill="none" stroke="#222222" stroke-width="2.5"/>
+  <path d="M280,215 L400,215 L400,410 L460,410" fill="none" stroke="#1f9e8e" stroke-width="2.5"/>
+  <path d="M280,240 L420,240 L420,440 L460,440" fill="none" stroke="#d9822b" stroke-width="2.5"/>
+  <path d="M280,265 L380,265 L380,380 L460,380" fill="none" stroke="#7a3fbf" stroke-width="2.5"/>
+
+  <!-- ===================== MAX98357A amp ===================== -->
+  <g>
+    <rect x="880" y="300" width="200" height="170" rx="6" fill="#fdfdfd" stroke="#333" stroke-width="2"/>
+    <text x="895" y="322" font-size="15" font-weight="bold" fill="#111">MAX98357A</text>
+    <text x="895" y="338" font-size="11" fill="#555">I2S class-D amp, 3.2W</text>
+
+    <circle cx="880" cy="330" r="4" fill="#3a9b3a"/><text x="960" y="326" font-size="11" text-anchor="end" fill="#222">SD</text>
+    <circle cx="880" cy="360" r="4" fill="#1f9e8e"/><text x="960" y="356" font-size="11" text-anchor="end" fill="#222">LRC</text>
+    <circle cx="880" cy="390" r="4" fill="#7a3fbf"/><text x="960" y="386" font-size="11" text-anchor="end" fill="#222">DIN</text>
+    <circle cx="880" cy="420" r="4" fill="#d9822b"/><text x="960" y="416" font-size="11" text-anchor="end" fill="#222">BCLK</text>
+    <text x="960" y="332" font-size="9" fill="#777" text-anchor="end"> </text>
+
+    <circle cx="920" cy="470" r="4" fill="#cc3333"/><text x="920" y="486" font-size="10.5" text-anchor="middle" fill="#222">VIN</text>
+    <circle cx="960" cy="470" r="4" fill="#222222"/><text x="960" y="486" font-size="10.5" text-anchor="middle" fill="#222">GND</text>
+
+    <circle cx="1080" cy="330" r="4" fill="#555555"/><text x="1000" y="326" font-size="10.5" fill="#222">SPK+</text>
+    <circle cx="1080" cy="380" r="4" fill="#555555"/><text x="1000" y="396" font-size="10.5" fill="#222">SPK−</text>
+  </g>
+
+  <!-- MCU-to-amp wires -->
+  <path d="M740,320 L800,320 L800,330 L880,330" fill="none" stroke="#3a9b3a" stroke-width="2.5"/>
+  <path d="M740,350 L820,350 L820,360 L880,360" fill="none" stroke="#1f9e8e" stroke-width="2.5"/>
+  <path d="M740,380 L840,380 L840,390 L880,390" fill="none" stroke="#7a3fbf" stroke-width="2.5"/>
+  <path d="M740,410 L860,410 L860,420 L880,420" fill="none" stroke="#d9822b" stroke-width="2.5"/>
+
+  <!-- amp output to speaker -->
+  <path d="M1080,330 L1090,330" fill="none" stroke="#555555" stroke-width="2.5"/>
+  <path d="M1080,380 L1090,380" fill="none" stroke="#555555" stroke-width="2.5"/>
+
+  <!-- Speaker -->
+  <g>
+    <rect x="1090" y="300" width="100" height="120" rx="6" fill="#fdfdfd" stroke="#333" stroke-width="2"/>
+    <circle cx="1140" cy="350" r="26" fill="#eee" stroke="#333" stroke-width="2"/>
+    <circle cx="1140" cy="350" r="10" fill="#ccc" stroke="#333" stroke-width="1.5"/>
+    <text x="1140" y="398" text-anchor="middle" font-size="10.5" fill="#222">4–8Ω, 3–5W</text>
+    <circle cx="1090" cy="330" r="4" fill="#555555"/>
+    <circle cx="1090" cy="380" r="4" fill="#555555"/>
+  </g>
+
+  <!-- amp VIN/GND risers to rails, with decoupling cap -->
+  <path d="M920,470 L920,605" fill="none" stroke="#cc3333" stroke-width="2.5"/>
+  <path d="M920,625 L920,840" fill="none" stroke="#cc3333" stroke-width="2.5"/>
+  <line x1="905" y1="605" x2="935" y2="605" stroke="#222" stroke-width="2.5"/>
+  <line x1="905" y1="612" x2="935" y2="612" stroke="#222" stroke-width="1.5"/>
+  <text x="945" y="612" font-size="10" fill="#777">100–220µF, close to amp</text>
+  <path d="M960,470 L960,880" fill="none" stroke="#222222" stroke-width="2.5"/>
+  <text x="700" y="605" font-size="10.5" fill="#a33" text-anchor="end">⚠ amp VIN fed straight from the 5V</text>
+  <text x="700" y="618" font-size="10.5" fill="#a33" text-anchor="end">supply — not the ESP32 board's regulator</text>
+
+  <!-- MCU bottom risers -->
+  <path d="M620,620 L620,840" fill="none" stroke="#cc3333" stroke-width="2.5"/>
+  <path d="M670,620 L670,800" fill="none" stroke="#2f6fce" stroke-width="2.5"/>
+  <path d="M720,620 L720,880" fill="none" stroke="#222222" stroke-width="2.5"/>
+
+  <!-- ===================== Push-to-talk button ===================== -->
+  <g>
+    <rect x="470" y="650" width="80" height="50" rx="5" fill="#fdfdfd" stroke="#333" stroke-width="2"/>
+    <text x="510" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#111">SW1</text>
+    <text x="510" y="686" text-anchor="middle" font-size="9.5" fill="#555">push-to-talk</text>
+    <line x1="495" y1="695" x2="525" y2="680" stroke="#333" stroke-width="2"/>
+    <circle cx="510" cy="650" r="4" fill="#3a9b3a"/>
+    <circle cx="510" cy="700" r="4" fill="#222222"/>
+  </g>
+  <path d="M500,620 L500,635 L510,635 L510,650" fill="none" stroke="#3a9b3a" stroke-width="2.5"/>
+  <path d="M510,700 L510,880" fill="none" stroke="#222222" stroke-width="2.5"/>
+  <text x="440" y="712" font-size="9.5" fill="#777">momentary N.O., internal pull-up in firmware</text>
+
+  <!-- ===================== WS2812 status LED ===================== -->
+  <g>
+    <rect x="610" y="650" width="90" height="60" rx="5" fill="#fdfdfd" stroke="#333" stroke-width="2"/>
+    <text x="655" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#111">WS2812</text>
+    <text x="655" y="686" text-anchor="middle" font-size="9.5" fill="#555">status LED</text>
+    <circle cx="630" cy="650" r="4" fill="#3a9b3a"/>
+    <circle cx="615" cy="710" r="4" fill="#2f6fce"/>
+    <circle cx="665" cy="710" r="4" fill="#222222"/>
+    <text x="618" y="702" font-size="9" fill="#777">VCC</text>
+    <text x="668" y="702" font-size="9" text-anchor="end" fill="#777">GND</text>
+  </g>
+  <path d="M560,620 L560,635 L630,635 L630,645" fill="none" stroke="#3a9b3a" stroke-width="2.5"/>
+  <rect x="617" y="638" width="26" height="10" fill="#fff" stroke="#333" stroke-width="1.2"/>
+  <text x="630" y="632" text-anchor="middle" font-size="9" fill="#777">330Ω</text>
+  <path d="M630,648 L630,650" fill="none" stroke="#3a9b3a" stroke-width="2.5"/>
+  <path d="M615,710 L615,800" fill="none" stroke="#2f6fce" stroke-width="2.5"/>
+  <path d="M665,710 L665,880" fill="none" stroke="#222222" stroke-width="2.5"/>
+
+  <!-- ===================== 5V supply ===================== -->
+  <g>
+    <rect x="80" y="650" width="200" height="90" rx="6" fill="#fdfdfd" stroke="#333" stroke-width="2"/>
+    <text x="180" y="678" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">5V / 2A supply</text>
+    <text x="180" y="694" text-anchor="middle" font-size="10.5" fill="#555">USB-C or barrel jack — dedicated,</text>
+    <text x="180" y="708" text-anchor="middle" font-size="10.5" fill="#555">not shared with the dev board's USB port</text>
+    <circle cx="250" cy="740" r="4" fill="#cc3333"/><text x="250" y="756" font-size="10" text-anchor="middle" fill="#222">+</text>
+    <circle cx="110" cy="740" r="4" fill="#222222"/><text x="110" y="756" font-size="10" text-anchor="middle" fill="#222">GND</text>
+  </g>
+  <path d="M250,740 L250,840" fill="none" stroke="#cc3333" stroke-width="3"/>
+  <path d="M110,740 L110,880" fill="none" stroke="#222222" stroke-width="3"/>
+
+  <!-- ===================== Power rails ===================== -->
+  <line x1="80" y1="800" x2="1120" y2="800" stroke="#2f6fce" stroke-width="4"/>
+  <text x="40" y="804" font-size="12" font-weight="bold" fill="#2f6fce">3V3</text>
+  <line x1="80" y1="840" x2="1120" y2="840" stroke="#cc3333" stroke-width="4"/>
+  <text x="34" y="844" font-size="12" font-weight="bold" fill="#cc3333">+5V</text>
+  <line x1="80" y1="880" x2="1120" y2="880" stroke="#222222" stroke-width="4"/>
+  <text x="30" y="884" font-size="12" font-weight="bold" fill="#222222">GND</text>
+
+  <!-- rail junction dots -->
+  <circle cx="670" cy="800" r="4" fill="#2f6fce"/>
+  <circle cx="615" cy="800" r="4" fill="#2f6fce"/>
+  <circle cx="620" cy="840" r="4" fill="#cc3333"/>
+  <circle cx="250" cy="840" r="4" fill="#cc3333"/>
+  <circle cx="920" cy="840" r="4" fill="#cc3333"/>
+  <circle cx="720" cy="880" r="4" fill="#222222"/>
+  <circle cx="960" cy="880" r="4" fill="#222222"/>
+  <circle cx="510" cy="880" r="4" fill="#222222"/>
+  <circle cx="665" cy="880" r="4" fill="#222222"/>
+  <circle cx="110" cy="880" r="4" fill="#222222"/>
+
+  <text x="1170" y="908" text-anchor="end" font-size="10.5" fill="#888">JLS-1 rev 1.0 · sheet 1/1</text>
+</svg>
